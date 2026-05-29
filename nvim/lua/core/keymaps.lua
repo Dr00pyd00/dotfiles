@@ -1,3 +1,15 @@
+--
+-- vim.keymap.set("mode", "touche", action, { desc = "description" } )
+-- mode => mode nvim : normal, visual etc 
+-- touche => combinaison de touches 
+-- action => ce que ca fait
+-- desc => explication perso
+--
+--
+
+
+
+
 -- Diagnostics
 vim.keymap.set("n", "<leader>E", vim.diagnostic.open_float, { desc = "Erreur Python" })
 
