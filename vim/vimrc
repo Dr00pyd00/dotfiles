@@ -1,0 +1,52 @@
+" =========================
+" Plugins (strict minimum)
+" =========================
+call plug#begin('~/.vim/plugged')
+
+Plug 'morhetz/gruvbox'
+
+call plug#end()
+
+
+
+
+" =========================
+" Apparence
+" =========================
+set background=dark
+colorscheme gruvbox
+
+set number          " numéros de lignes
+set cursorline      " surligner la ligne actuelle
+set termguicolors   " couleurs correctes si supportées
+
+
+
+" =========================
+" Tabulation : 2 espaces
+" =========================
+set tabstop=2
+set shiftwidth=2
+set softtabstop=2
+set expandtab
+
+
+" ========================
+" Edition
+" ========================
+set showmatch
+set nowrap  " montre brievement la parenthese
+
+set hidden  " changement de buffer sans save
+set clipboard=unnamedplus " partage presse papier avec systeme
+" ===> explication :
+"     utiliser le registre '"+' , exemple :
+"                                           ---> "+y   copier dans systeme
+"                                           ---> "+p   coller un truc du
+"                                           system
+set mouse=a  
+
+
+set splitright
+set splitbelow
+
