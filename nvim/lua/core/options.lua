@@ -1,7 +1,7 @@
 
 -- Options de base
 vim.opt.number = true          -- numéros de lignes
-vim.opt.relativenumber = false  -- numéros relatifs
+vim.opt.relativenumber = true  -- numéros relatifs
 vim.opt.tabstop = 4            -- largeur d'une tabulation
 vim.opt.shiftwidth = 4         -- largeur de l'indentation
 vim.opt.expandtab = true       -- convertit les tabs en espaces
