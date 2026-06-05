@@ -14,3 +14,13 @@ vim.opt.scrolloff = 8          -- garde 8 lignes visibles au dessus/dessous du c
 vim.g.mapleader = " "
 
 
+-- ajout path pour voir les includes C:
+vim.opt.path:append("/usr/include")
+vim.opt.path:append("/usr/include/sys/")
+vim.opt.path:append("/usr/include/x86_64-linux-gnu")
+
+
+
+-- Désactiver la continuation automatique des commentaires
+vim.opt.formatoptions:remove({ "c", "r", "o" })
+

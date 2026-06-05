@@ -5,6 +5,32 @@ call plug#begin('~/.vim/plugged')
 
 Plug 'morhetz/gruvbox'
 
+
+" Catppuccin
+Plug 'catppuccin/vim', { 'as': 'catppuccin' }
+
+" Tokyonight
+Plug 'folke/tokyonight.nvim'
+
+" Nord
+Plug 'arcticicestudio/nord-vim'
+
+" OneDark
+Plug 'joshdick/onedark.vim'
+
+" Everforest
+Plug 'sainnhe/everforest'
+
+Plug 'catppuccin/vim', { 'as': 'catppuccin' }
+Plug 'sainnhe/everforest'
+Plug 'sainnhe/gruvbox-material'
+Plug 'rose-pine/vim'
+Plug 'sainnhe/sonokai'
+Plug 'sainnhe/edge'
+
+Plug 'rebelot/kanagawa.nvim'
+Plug 'ghifarit53/tokyonight-vim'
+
 call plug#end()
 
 
@@ -14,7 +40,8 @@ call plug#end()
 " Apparence
 " =========================
 set background=dark
-colorscheme gruvbox
+colorscheme catppuccin_mocha
+
 
 set number          " numéros de lignes
 set cursorline      " surligner la ligne actuelle
