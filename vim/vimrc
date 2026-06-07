@@ -1,3 +1,5 @@
+
+
 " =========================
 " Plugins
 " =========================
@@ -12,7 +14,7 @@ Plug 'sainnhe/gruvbox-material'
 Plug 'rose-pine/vim'
 Plug 'sainnhe/sonokai'
 Plug 'sainnhe/edge'
-Plug 'ghifarit53/tokyonight-vim'  " version vim de tokyonight (pas .nvim)
+Plug 'ghifarit53/tokyonight-vim'
 
 call plug#end()
 
@@ -20,31 +22,26 @@ call plug#end()
 " Apparence
 " =========================
 set background=dark
-silent! colorscheme catppuccin_mocha  " silent! evite l'erreur si plugin pas encore installe
-set number                            " numeros de lignes
-set cursorline                        " surligne la ligne actuelle
-set termguicolors                     " true color si le terminal le supporte
+silent! colorscheme catppuccin_mocha
+set number
+set cursorline
+set termguicolors
 
 " =========================
 " Tabulation : 2 espaces
 " =========================
-set tabstop=2      " un tab = 2 espaces visuellement
-set shiftwidth=2   " indentation avec >> et << = 2 espaces
-set softtabstop=2  " tab en mode insertion = 2 espaces
-set expandtab      " remplace les tabs par des espaces
+set tabstop=2
+set shiftwidth=2
+set softtabstop=2
+set expandtab
 
 " =========================
 " Edition
 " =========================
-set showmatch    " montre brievement la parenthese correspondante
-set nowrap       " pas de retour a la ligne automatique
-set hidden       " permet de changer de buffer sans sauvegarder
-
-" Partage le presse-papier avec le systeme
-" "+y pour copier vers le systeme
-" "+p pour coller depuis le systeme
+set showmatch
+set nowrap
+set hidden
 set clipboard=unnamedplus
-
-set mouse=a      " souris activee dans tous les modes
-set splitright   " nouveau split vertical s'ouvre a droite
-set splitbelow   " nouveau split horizontal s'ouvre en bas
+set mouse=a
+set splitright
+set splitbelow
