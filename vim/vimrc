@@ -1,79 +1,50 @@
 " =========================
-" Plugins (strict minimum)
+" Plugins
 " =========================
 call plug#begin('~/.vim/plugged')
 
 Plug 'morhetz/gruvbox'
-
-
-" Catppuccin
 Plug 'catppuccin/vim', { 'as': 'catppuccin' }
-
-" Tokyonight
-Plug 'folke/tokyonight.nvim'
-
-" Nord
 Plug 'arcticicestudio/nord-vim'
-
-" OneDark
 Plug 'joshdick/onedark.vim'
-
-" Everforest
-Plug 'sainnhe/everforest'
-
-Plug 'catppuccin/vim', { 'as': 'catppuccin' }
 Plug 'sainnhe/everforest'
 Plug 'sainnhe/gruvbox-material'
 Plug 'rose-pine/vim'
 Plug 'sainnhe/sonokai'
 Plug 'sainnhe/edge'
-
-Plug 'rebelot/kanagawa.nvim'
-Plug 'ghifarit53/tokyonight-vim'
+Plug 'ghifarit53/tokyonight-vim'  " version vim de tokyonight (pas .nvim)
 
 call plug#end()
-
-
-
 
 " =========================
 " Apparence
 " =========================
 set background=dark
-colorscheme catppuccin_mocha
-
-
-set number          " numéros de lignes
-set cursorline      " surligner la ligne actuelle
-set termguicolors   " couleurs correctes si supportées
-
-
+silent! colorscheme catppuccin_mocha  " silent! evite l'erreur si plugin pas encore installe
+set number                            " numeros de lignes
+set cursorline                        " surligne la ligne actuelle
+set termguicolors                     " true color si le terminal le supporte
 
 " =========================
 " Tabulation : 2 espaces
 " =========================
-set tabstop=2
-set shiftwidth=2
-set softtabstop=2
-set expandtab
+set tabstop=2      " un tab = 2 espaces visuellement
+set shiftwidth=2   " indentation avec >> et << = 2 espaces
+set softtabstop=2  " tab en mode insertion = 2 espaces
+set expandtab      " remplace les tabs par des espaces
 
-
-" ========================
+" =========================
 " Edition
-" ========================
-set showmatch
-set nowrap  " montre brievement la parenthese
+" =========================
+set showmatch    " montre brievement la parenthese correspondante
+set nowrap       " pas de retour a la ligne automatique
+set hidden       " permet de changer de buffer sans sauvegarder
 
-set hidden  " changement de buffer sans save
-set clipboard=unnamedplus " partage presse papier avec systeme
-" ===> explication :
-"     utiliser le registre '"+' , exemple :
-"                                           ---> "+y   copier dans systeme
-"                                           ---> "+p   coller un truc du
-"                                           system
-set mouse=a  
+" Partage le presse-papier avec le systeme
+" "+y pour copier vers le systeme
+" "+p pour coller depuis le systeme
+set clipboard=unnamedplus
 
-
-set splitright
-set splitbelow
-
+set mouse=a      " souris activee dans tous les modes
+set splitright   " nouveau split vertical s'ouvre a droite
+set splitbelow   " nouveau split horizontal s'ouvre en bas
