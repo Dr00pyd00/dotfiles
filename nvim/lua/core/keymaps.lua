@@ -19,6 +19,7 @@ vim.keymap.set("n", "<leader>t", function()
   vim.cmd("terminal")
 end, { desc = "Terminal" })
 
+-- Autocompletion 
 vim.keymap.set("n", "<leader>C", function()
   local cmp = require("cmp")
   if cmp.get_config().completion.autocomplete then
@@ -30,4 +31,10 @@ vim.keymap.set("n", "<leader>C", function()
   end
 end, { desc = "Toggle complétion" })
 
+
+-- Surlignage cursor
+vim.keymap.set("n", "<leader>0", function()
+    vim.opt.cursorline = not vim.opt.cursorline:get()
+end, { desc = "Toggle cursorline" } )
+    
  

@@ -12,6 +12,7 @@ vim.opt.clipboard = "unnamedplus" -- partage le presse-papier avec le système
 vim.opt.termguicolors = true   -- couleurs 24 bits
 vim.opt.scrolloff = 8          -- garde 8 lignes visibles au dessus/dessous du curseur
 vim.g.mapleader = " "
+vim.opt.cursorline = true
 
 
 -- ajout path pour voir les includes C:
