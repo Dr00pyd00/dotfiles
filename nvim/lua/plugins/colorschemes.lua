@@ -9,7 +9,7 @@ return {
     priority = 1000,
     config = function()
       require("catppuccin").setup({
-        flavour = "mocha", -- choix : latte | frappe | macchiato | mocha
+        flavour = "frappe", -- choix : latte | frappe | macchiato | mocha
         integrations = {
           treesitter = true,
           native_lsp = {
@@ -25,7 +25,7 @@ return {
           mason = true,
         },
       })
-      vim.cmd("colorscheme catppuccin-mocha")
+      vim.cmd("colorscheme catppuccin-frappe")
     end,
   },
   { "ellisonleao/gruvbox.nvim" },

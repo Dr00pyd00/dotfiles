@@ -37,4 +37,9 @@ vim.keymap.set("n", "<leader>0", function()
     vim.opt.cursorline = not vim.opt.cursorline:get()
 end, { desc = "Toggle cursorline" } )
     
+-- Go to definition in vertical split
+vim.keymap.set("n", "gs", function()
+  vim.cmd("vsplit")
+  vim.lsp.buf.definition()
+end, { desc = "Go to definition (vsplit)" })
  
