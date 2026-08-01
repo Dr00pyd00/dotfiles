@@ -3,17 +3,16 @@ return {
     dependencies = {
         "nvim-treesitter/nvim-treesitter",
     },
-    config = function()
-        require("Comment").setup()
+    
+config = function()
+    require("Comment").setup({
+        pre_hook = function(ctx)
+            local U = require("Comment.utils")
 
-        vim.api.nvim_create_autocmd("FileType", {
-            pattern = { "python", "lua", "c" },
-            callback = function()
-                local cs = vim.bo.commentstring
-                if cs == "" or cs == nil then
-                    vim.bo.commentstring = "# %s"
-                end
+            if vim.bo.filetype == "python" then
+                return "# %s"
             end
-        })
-    end
+        end,
+    })
+end
 }
