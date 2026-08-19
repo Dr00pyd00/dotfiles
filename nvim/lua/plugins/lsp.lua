@@ -10,7 +10,7 @@ return {
     dependencies = { "williamboman/mason.nvim" },
     config = function()
       require("mason-lspconfig").setup({
-        ensure_installed = { "pyright" },
+        ensure_installed = { "basedpyright", "emmet_language_server" },
       })
     end,
   },
@@ -22,23 +22,27 @@ return {
     },
     config = function()
       local capabilities = require("cmp_nvim_lsp").default_capabilities()
-
-      vim.lsp.config("pyright", {
+      vim.lsp.config("basedpyright", {
         capabilities = capabilities,
         settings = {
-          python = {
+          basedpyright = {
             analysis = {
               autoSearchPaths = true,
               useLibraryCodeForTypes = true,
+              typeCheckingMode = "standard",
             },
           },
         },
       })
-
-      vim.lsp.enable("pyright")
-     vim.keymap.set("n", "gd", vim.lsp.buf.definition, { desc = "Go to definition" })
-     vim.keymap.set("n", "gD", vim.lsp.buf.declaration, { desc = "Go to declaration" })
-     vim.keymap.set("n", "K", vim.lsp.buf.hover, { desc = "Hover documentation" })
+      vim.lsp.enable("basedpyright")
+      vim.lsp.config("emmet_language_server", {
+        capabilities = capabilities,
+        filetypes = { "html", "css", "htmldjango", "javascriptreact", "typescriptreact" },
+      })
+      vim.lsp.enable("emmet_language_server")
+      vim.keymap.set("n", "gd", vim.lsp.buf.definition, { desc = "Go to definition" })
+      vim.keymap.set("n", "gD", vim.lsp.buf.declaration, { desc = "Go to declaration" })
+      vim.keymap.set("n", "K", vim.lsp.buf.hover, { desc = "Hover documentation" })
     end,
   },
 }
