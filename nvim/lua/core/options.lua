@@ -1,4 +1,6 @@
 
+
+
 -- Options de base
 vim.opt.number = true          -- numéros de lignes
 vim.opt.relativenumber = true  -- numéros relatifs
@@ -15,6 +17,25 @@ vim.g.mapleader = " "
 vim.opt.cursorline = true
 
 
+-- Presse-papier : on force xclip au lieu de laisser nvim choisir tout seul.
+-- Sans ca il bascule sur OSC 52, que le terminal ne sait pas gerer
+-- (symptome : "+q4D73" ecrit dans le buffer au demarrage).
+if vim.fn.executable("xclip") == 1 then
+  vim.g.clipboard = {
+    name = "xclip",
+    copy = {
+      ["+"] = "xclip -selection clipboard",
+      ["*"] = "xclip -selection primary",
+    },
+    paste = {
+      ["+"] = "xclip -selection clipboard -o",
+      ["*"] = "xclip -selection primary -o",
+    },
+    cache_enabled = 1,
+  }
+end
+
+
 -- ajout path pour voir les includes C:
 vim.opt.path:append("/usr/include")
 vim.opt.path:append("/usr/include/sys/")
@@ -24,4 +45,5 @@ vim.opt.path:append("/usr/include/x86_64-linux-gnu")
 
 -- Désactiver la continuation automatique des commentaires
 vim.opt.formatoptions:remove({ "c", "r", "o" })
+
 
