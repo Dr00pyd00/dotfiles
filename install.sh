@@ -1,3 +1,4 @@
+
 #!/usr/bin/env bash
 # ============================================================
 #  Personal Dev Setup — dotfiles installer
@@ -134,6 +135,8 @@ if node_ok; then
   echo ">>> Node deja present: $(node -v)"
 else
   echo ">>> Installing nvm + Node LTS..."
+  # nvm refuse de s'installer si NVM_DIR est defini mais pointe dans le vide
+  mkdir -p "$NVM_DIR"
   curl -fsSL https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.1/install.sh | bash
   # shellcheck disable=SC1091
   . "$NVM_DIR/nvm.sh"
@@ -145,11 +148,24 @@ fi
 # ------------------------------------------------------------
 # 5. tree-sitter CLI (necessaire pour :TSInstall)
 # ------------------------------------------------------------
-if command -v tree-sitter >/dev/null 2>&1; then
-  echo ">>> tree-sitter CLI deja present"
+if tree-sitter --version >/dev/null 2>&1; then
+  echo ">>> tree-sitter CLI deja present: $(tree-sitter --version)"
 else
   echo ">>> Installing tree-sitter CLI..."
-  npm install -g tree-sitter-cli
+  npm install -g tree-sitter-cli >/dev/null 2>&1 || true
+
+  # npm recent bloque les scripts d'install par defaut, or c'est ce script
+  # qui telecharge le vrai binaire -> on reessaie en l'autorisant.
+  if ! tree-sitter --version >/dev/null 2>&1; then
+    npm install -g --allow-scripts=tree-sitter-cli tree-sitter-cli >/dev/null 2>&1 || true
+  fi
+
+  if tree-sitter --version >/dev/null 2>&1; then
+    echo ">>> tree-sitter CLI installe: $(tree-sitter --version)"
+  else
+    echo "!! tree-sitter CLI indisponible — ':TSInstall' echouera."
+    echo "!! essaie a la main: npm install -g --allow-scripts=tree-sitter-cli tree-sitter-cli"
+  fi
 fi
 
 # ------------------------------------------------------------
@@ -175,7 +191,8 @@ make_link() {
 
   # backup horodate -> on n'ecrase jamais un ancien .bak
   if [ -e "$dst" ] || [ -L "$dst" ]; then
-    local backup="$dst.bak.$(date +%Y%m%d-%H%M%S)"
+    local backup
+    backup="$dst.bak.$(date +%Y%m%d-%H%M%S)"
     mv "$dst" "$backup"
     echo "~ backup: $dst -> $backup"
   fi
