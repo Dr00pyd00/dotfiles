@@ -1,87 +1,217 @@
-#!/usr/bin/env bash 
-# env -> programme qui recherche la commande dans les PATH (plus portable)
+#!/usr/bin/env bash
+# ============================================================
+#  Personal Dev Setup — dotfiles installer
+#
+#  Usage:
+#    ./install.sh              -> mode editors (par defaut)
+#    ./install.sh --editors    -> vim + nvim + node + symlinks
+#    ./install.sh --full       -> editors + outils dev/debug/reseau
+#    ./install.sh --help
+# ============================================================
 
-set -e   # stop script if error
-sudo -v 
+set -euo pipefail
 
-DOTFILES_DIR="$HOME/dotfiles"
+# ------------------------------------------------------------
+# 0. Emplacement reel du repo (plus de chemin code en dur)
+# ------------------------------------------------------------
+DOTFILES_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
-echo ">>> Udpating Dev Setup !!! >>>"
-sudo apt update -y && sudo apt upgrade -y 
+MODE="editors"
 
-echo ">>> Installing base dev tools..."
+while [ $# -gt 0 ]; do
+  case "$1" in
+    --editors) MODE="editors" ;;
+    --full)    MODE="full" ;;
+    -h|--help)
+      echo "Usage: $0 [--editors|--full]"
+      echo "  --editors  vim + nvim + node + symlinks (defaut, leger)"
+      echo "  --full     editors + tous les outils dev/debug/reseau"
+      exit 0
+      ;;
+    *)
+      echo "Option inconnue: $1  (voir --help)" >&2
+      exit 1
+      ;;
+  esac
+  shift
+done
+
+echo ">>> Mode: $MODE"
+echo ">>> Repo: $DOTFILES_DIR"
+
+# ------------------------------------------------------------
+# 1. sudo + keep-alive (evite l'expiration pendant un long apt)
+# ------------------------------------------------------------
+sudo -v
+while true; do sudo -n true; sleep 60; kill -0 "$$" 2>/dev/null || exit; done 2>/dev/null &
+SUDO_KEEPALIVE_PID=$!
+trap 'kill "$SUDO_KEEPALIVE_PID" 2>/dev/null || true' EXIT
+
+# ------------------------------------------------------------
+# 2. Paquets apt
+# ------------------------------------------------------------
+echo ">>> apt update..."
+sudo apt update -y
+
+echo ">>> Installing editor essentials..."
 sudo apt install -y \
   build-essential \
   curl wget \
   git \
-  tree \
-  htop \
   unzip zip \
   ca-certificates \
-  software-properties-common \
-  tmux \
   vim-gtk3 \
   xclip \
-  python3 \
-  python3-pip \
-  python3-venv
+  tmux
 
-echo ">>> Installing debug & network tools..."
-sudo apt install -y \
-  strace \
-  ltrace \
-  gdb \
-  lsof \
-  net-tools \
-  iproute2 \
-  netcat-openbsd \
-  tcpdump
+if [ "$MODE" = "full" ]; then
+  echo ">>> apt upgrade..."
+  sudo apt upgrade -y
 
+  echo ">>> Installing extra dev tools..."
+  sudo apt install -y \
+    tree \
+    htop \
+    software-properties-common \
+    python3 \
+    python3-pip \
+    python3-venv
 
+  echo ">>> Installing debug & network tools..."
+  sudo apt install -y \
+    strace \
+    ltrace \
+    gdb \
+    lsof \
+    net-tools \
+    iproute2 \
+    netcat-openbsd \
+    tcpdump
+fi
+
+# ------------------------------------------------------------
+# 3. Neovim (tarball dans /tmp, jamais dans le repo)
+# ------------------------------------------------------------
 echo ">>> Installing Neovim..."
-curl -LO https://github.com/neovim/neovim/releases/latest/download/nvim-linux-x86_64.tar.gz
-sudo tar -C /opt -xzf nvim-linux-x86_64.tar.gz
-sudo ln -sf /opt/nvim-linux-x86_64/bin/nvim /usr/local/bin/nvim
-rm nvim-linux-x86_64.tar.gz
 
+case "$(uname -m)" in
+  x86_64)  NVIM_ARCH="linux-x86_64" ;;
+  aarch64) NVIM_ARCH="linux-arm64" ;;
+  *) echo "Architecture non supportee: $(uname -m)" >&2; exit 1 ;;
+esac
 
-echo ">>> Installing Node.js..."
-sudo apt install -y nodejs npm
+NVIM_TMP="$(mktemp -d)"
+trap 'kill "$SUDO_KEEPALIVE_PID" 2>/dev/null || true; rm -rf "$NVIM_TMP"' EXIT
 
+curl -fL -o "$NVIM_TMP/nvim.tar.gz" \
+  "https://github.com/neovim/neovim/releases/latest/download/nvim-${NVIM_ARCH}.tar.gz"
 
-# ici il faut une fonction qui verifie que les configs ou links existent pas deja, si c'estle cas , ajoute ".bak" a la fin pour pas les ecraser.
-make_link() {
-    local src=$1
-    local dst=$2
+sudo rm -rf "/opt/nvim-${NVIM_ARCH}"
+sudo tar -C /opt -xzf "$NVIM_TMP/nvim.tar.gz"
+sudo ln -sfn "/opt/nvim-${NVIM_ARCH}/bin/nvim" /usr/local/bin/nvim
 
-    # on teste si le fichier ou link existe deja:
-    if [ -e "$dst" ] || [ -L "$dst" ]; then 
-        mv "$dst" "$dst.bak"
-        echo "Backed up $dst --> $dst.bak !!"
-    fi
+echo ">>> Neovim: $(/usr/local/bin/nvim --version | head -1)"
 
-    # creation du link
-    ln -s "$src" "$dst"
-    echo "Linked $src --> $dst !! "
+# ------------------------------------------------------------
+# 4. Node.js via nvm (evite les conflits avec les paquets apt)
+# ------------------------------------------------------------
+export NVM_DIR="$HOME/.nvm"
+
+node_ok() {
+  command -v node >/dev/null 2>&1 || return 1
+  local major
+  major="$(node -v | sed 's/^v//' | cut -d. -f1)"
+  [ "$major" -ge 18 ]
 }
 
-# on appel 3 fois pour le moment:
+# charge nvm s'il est deja installe mais pas dans ce shell
+if [ -s "$NVM_DIR/nvm.sh" ]; then
+  # shellcheck disable=SC1091
+  . "$NVM_DIR/nvm.sh"
+fi
+
+if node_ok; then
+  echo ">>> Node deja present: $(node -v)"
+else
+  echo ">>> Installing nvm + Node LTS..."
+  curl -fsSL https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.1/install.sh | bash
+  # shellcheck disable=SC1091
+  . "$NVM_DIR/nvm.sh"
+  nvm install --lts
+  nvm alias default 'lts/*'
+  echo ">>> Node installe: $(node -v)"
+fi
+
+# ------------------------------------------------------------
+# 5. tree-sitter CLI (necessaire pour :TSInstall)
+# ------------------------------------------------------------
+if command -v tree-sitter >/dev/null 2>&1; then
+  echo ">>> tree-sitter CLI deja present"
+else
+  echo ">>> Installing tree-sitter CLI..."
+  npm install -g tree-sitter-cli
+fi
+
+# ------------------------------------------------------------
+# 6. Symlinks
+# ------------------------------------------------------------
+make_link() {
+  local src="$1"
+  local dst="$2"
+
+  if [ ! -e "$src" ]; then
+    echo "!! source introuvable, ignore: $src" >&2
+    return 0
+  fi
+
+  # cree le dossier parent si besoin (~/.config par exemple)
+  mkdir -p "$(dirname "$dst")"
+
+  # deja le bon lien -> rien a faire
+  if [ -L "$dst" ] && [ "$(readlink -f "$dst")" = "$(readlink -f "$src")" ]; then
+    echo "= deja lie: $dst"
+    return 0
+  fi
+
+  # backup horodate -> on n'ecrase jamais un ancien .bak
+  if [ -e "$dst" ] || [ -L "$dst" ]; then
+    local backup="$dst.bak.$(date +%Y%m%d-%H%M%S)"
+    mv "$dst" "$backup"
+    echo "~ backup: $dst -> $backup"
+  fi
+
+  ln -s "$src" "$dst"
+  echo "+ link: $dst -> $src"
+}
+
 echo ">>> Creating symlinks..."
+make_link "$DOTFILES_DIR/vim/vimrc"  "$HOME/.vimrc"
+make_link "$DOTFILES_DIR/nvim"       "$HOME/.config/nvim"
 make_link "$DOTFILES_DIR/tmux/tmux.conf" "$HOME/.tmux.conf"
-make_link "$DOTFILES_DIR/vim/vimrc"      "$HOME/.vimrc"
-make_link "$DOTFILES_DIR/nvim"           "$HOME/.config/nvim"
 
-
-echo ">>> Installing vim-plug..."
-curl -fLo ~/.vim/autoload/plug.vim --create-dirs \
-     https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
+# ------------------------------------------------------------
+# 7. vim-plug + plugins vim
+# ------------------------------------------------------------
+if [ ! -f "$HOME/.vim/autoload/plug.vim" ]; then
+  echo ">>> Installing vim-plug..."
+  curl -fLo "$HOME/.vim/autoload/plug.vim" --create-dirs \
+    https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
+fi
 
 echo ">>> Installing vim plugins..."
-vim +PlugInstall +qall
+vim +PlugInstall +qall </dev/null >/dev/null 2>&1 || echo "!! PlugInstall a echoue, lance ':PlugInstall' dans vim"
 
+# ------------------------------------------------------------
+# 8. Plugins Neovim (lazy) + serveurs LSP (mason)
+# ------------------------------------------------------------
+echo ">>> Syncing Neovim plugins (lazy.nvim)..."
+nvim --headless "+Lazy! sync" +qa </dev/null 2>&1 | tail -3 || echo "!! Lazy sync incomplet, relance nvim manuellement"
 
-echo "YAY Setup Completed !!!"
+echo ">>> Installing LSP servers (mason)..."
+nvim --headless "+MasonInstall basedpyright emmet-language-server" +qa </dev/null >/dev/null 2>&1 \
+  || echo "!! MasonInstall a echoue, lance ':Mason' dans nvim"
 
-
-
-
+# ------------------------------------------------------------
+echo ""
+echo "=== Setup termine (mode: $MODE) ==="
+echo "Ouvre un nouveau terminal (ou: source ~/.bashrc) pour charger Node."
