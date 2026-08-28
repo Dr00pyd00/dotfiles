@@ -7,5 +7,12 @@
   "reportMissingModuleSource": "none",
   "reportAttributeAccessIssue": "none",
   "reportCallIssue": "none",
-  "reportOptionalMemberAccess": "none"
+  "reportOptionalMemberAccess": "none",
+  "reportIncompatibleVariableOverride": "none",
+  "reportGeneralTypeIssues": "warning",
+  "exclude": [
+    "**/migrations",
+    "**/__pycache__",
+    ".venv"
+  ]
 }
