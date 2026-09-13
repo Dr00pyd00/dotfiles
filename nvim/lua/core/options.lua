@@ -15,6 +15,11 @@ vim.opt.termguicolors = true   -- couleurs 24 bits
 vim.opt.scrolloff = 8          -- garde 8 lignes visibles au dessus/dessous du curseur
 vim.g.mapleader = " "
 vim.opt.cursorline = true
+vim.opt.foldmethod = "expr"
+vim.opt.foldexpr = "v:lua.vim.treesitter.foldexpr()"
+vim.opt.foldenable = false
+vim.opt.foldlevelstart = 99
+vim.opt.foldnestmax = 2
 
 
 -- Presse-papier : on force xclip au lieu de laisser nvim choisir tout seul.
