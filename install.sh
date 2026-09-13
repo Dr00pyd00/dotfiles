@@ -145,6 +145,22 @@ else
   echo ">>> Node installe: $(node -v)"
 fi
 
+
+# ------------------------------------------------------------
+# 4.5. Config npm : paquets globaux dans le HOME (pas de sudo)
+# ------------------------------------------------------------
+echo ">>> Configuring npm global prefix..."
+NPM_GLOBAL="$HOME/.npm-global"
+mkdir -p "$NPM_GLOBAL"
+npm config set prefix "$NPM_GLOBAL"
+
+# ajoute au PATH si absent
+if ! grep -q '.npm-global/bin' "$HOME/.bashrc" 2>/dev/null; then
+  echo 'export PATH="$HOME/.npm-global/bin:$PATH"' >> "$HOME/.bashrc"
+  echo "+ PATH npm-global ajoute a ~/.bashrc"
+fi
+export PATH="$NPM_GLOBAL/bin:$PATH"
+
 # ------------------------------------------------------------
 # 5. tree-sitter CLI (necessaire pour :TSInstall)
 # ------------------------------------------------------------
