@@ -25,7 +25,8 @@ return {
           mason = true,
         },
       })
-      vim.cmd("colorscheme catppuccin-frappe")
+      -- COLORSCHEME PAR DEFAUT 
+      vim.cmd("colorscheme catppuccin-mocha")
     end,
   },
   { "ellisonleao/gruvbox.nvim" },
