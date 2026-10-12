@@ -10,7 +10,7 @@ return {
     dependencies = { "williamboman/mason.nvim" },
     config = function()
       require("mason-lspconfig").setup({
-        ensure_installed = { "basedpyright", "emmet_language_server", "cssls" },
+        ensure_installed = { "basedpyright", "emmet_language_server", "cssls", "ts_ls", "clangd" },
       })
     end,
   },
@@ -47,6 +47,16 @@ return {
         capabilities = capabilities,
       })
       vim.lsp.enable("cssls")
+
+      vim.lsp.config("ts_ls", {
+        capabilities = capabilities,
+      })
+      vim.lsp.enable("ts_ls")
+
+      vim.lsp.config("clangd", {
+        capabilities = capabilities,
+      })
+      vim.lsp.enable("clangd")
 
       vim.keymap.set("n", "gd", vim.lsp.buf.definition, { desc = "Go to definition" })
       vim.keymap.set("n", "gD", vim.lsp.buf.declaration, { desc = "Go to declaration" })

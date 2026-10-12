@@ -1,5 +1,3 @@
-
-
 return {
   "hrsh7th/nvim-cmp",
   dependencies = {
@@ -33,7 +31,7 @@ return {
       }),
     })
 
-    cmp.setup.filetype("python", {
+    cmp.setup.filetype({ "python", "javascript", "typescript" }, {
       completion = {
         autocomplete = { cmp.TriggerEvent.TextChanged },
       },
